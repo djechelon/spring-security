@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,14 +36,12 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
 	private Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
-	private String principalClaimName;
+	private String principalClaimName = JwtClaimNames.SUB;
 
 	@Override
 	public final AbstractAuthenticationToken convert(Jwt jwt) {
 		Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
-		if (this.principalClaimName == null) {
-			return new JwtAuthenticationToken(jwt, authorities);
-		}
+
 		String principalClaimValue = jwt.getClaimAsString(this.principalClaimName);
 		return new JwtAuthenticationToken(jwt, authorities, principalClaimValue);
 	}
@@ -51,11 +49,12 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 	/**
 	 * Extracts the {@link GrantedAuthority}s from scope attributes typically found in a
 	 * {@link Jwt}
+	 *
 	 * @param jwt The token
 	 * @return The collection of {@link GrantedAuthority}s found on the token
-	 * @deprecated Since 5.2. Use your own custom converter instead
 	 * @see JwtGrantedAuthoritiesConverter
 	 * @see #setJwtGrantedAuthoritiesConverter(Converter)
+	 * @deprecated Since 5.2. Use your own custom converter instead
 	 */
 	@Deprecated
 	protected Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
@@ -65,9 +64,10 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 	/**
 	 * Sets the {@link Converter Converter&lt;Jwt, Collection&lt;GrantedAuthority&gt;&gt;}
 	 * to use. Defaults to {@link JwtGrantedAuthoritiesConverter}.
+	 *
 	 * @param jwtGrantedAuthoritiesConverter The converter
-	 * @since 5.2
 	 * @see JwtGrantedAuthoritiesConverter
+	 * @since 5.2
 	 */
 	public void setJwtGrantedAuthoritiesConverter(
 			Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter) {
@@ -77,6 +77,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
 	/**
 	 * Sets the principal claim name. Defaults to {@link JwtClaimNames#SUB}.
+	 *
 	 * @param principalClaimName The principal claim name
 	 * @since 5.4
 	 */
